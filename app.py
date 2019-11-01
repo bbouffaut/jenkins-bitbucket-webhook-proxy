@@ -7,6 +7,7 @@ app = Flask(__name__)
 
 @app.route('/build', methods = ['POST'])
 def build():
+
   jenkins = request.args.get('jenkins')
   jenkins = jenkins if jenkins.startswith('http://') or jenkins.startswith('https://') else 'http://%s' % jenkins
   jenkins = jenkins[:-1] if jenkins.endswith('/') else jenkins
@@ -21,6 +22,8 @@ def build():
 
   # forward the request
   jenkins_url = '%s/job/%s/buildWithParameters?%s' % (jenkins, job, query)
+  print jenkins_url
+
   response = post(jenkins_url, params = { 'GIT_PROJECT': git_project })
 
   if (response.code in range(400, 500)):
