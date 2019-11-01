@@ -2,6 +2,7 @@ from flask import Flask
 from flask import request
 from flask import make_response
 from unirest import post
+from secrets import cfg
 
 app = Flask(__name__)
 
@@ -24,7 +25,10 @@ def build():
   jenkins_url = '%s/job/%s/buildWithParameters?%s' % (jenkins, job, query)
   print jenkins_url
 
-  response = post(jenkins_url, params = { 'GIT_PROJECT': git_project })
+  response = post(jenkins_url,
+    headers={"Accept": "application/json"},
+    params = { 'GIT_PROJECT': git_project },
+    auth=(cfg.JENKINS_LOGIN, cfg.JENKINS_PASSWORD))
 
   if (response.code in range(400, 500)):
     return "Request error"

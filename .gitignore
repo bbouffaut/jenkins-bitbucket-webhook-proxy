@@ -1,5 +1,6 @@
 .DS_Store
 Thumbs.db
 bitbucket_webhook_payload.json
+secrets.py
 
 /env/
