@@ -2,6 +2,7 @@ from flask import Flask
 from flask import request
 from flask import make_response
 from unirest import post
+import json
 
 app = Flask(__name__)
 
@@ -17,15 +18,14 @@ def build():
   json = request.json
   git_hash = json['push']['changes'][0]['new']['target']['hash']
   git_project = json['repository']['name'].lower()
-  print git_project + "/" + git_hash
 
   # forward the request
   jenkins_url = '%s/generic-webhook-trigger/invoke?%s' % (jenkins, query)
-  print jenkins_url
+  #print "Incoming WebHooks on %s / %s triggers jenkins on %s" % (git_project, git_hash, jenkins_url)
 
   response = post(jenkins_url,
     headers={"Accept": "application/json"},
-    params = { 'GIT_PROJECT': git_project })
+    params = json.dumps({ 'GIT_PROJECT': git_project }))
 
   if (response.code in range(400, 500)):
     return "Request error"
