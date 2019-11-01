@@ -2,7 +2,6 @@ from flask import Flask
 from flask import request
 from flask import make_response
 from unirest import post
-from secrets import cfg
 
 app = Flask(__name__)
 
@@ -12,7 +11,6 @@ def build():
   jenkins = request.args.get('jenkins')
   jenkins = jenkins if jenkins.startswith('http://') or jenkins.startswith('https://') else 'http://%s' % jenkins
   jenkins = jenkins[:-1] if jenkins.endswith('/') else jenkins
-  job = request.args.get('job')
   token = request.args.get('token', None)
   query = '' if token is None else 'token=%s' % token
 
@@ -22,13 +20,12 @@ def build():
   print git_project + "/" + git_hash
 
   # forward the request
-  jenkins_url = '%s/job/%s/buildWithParameters?%s' % (jenkins, job, query)
+  jenkins_url = '%s/generic-webhook-trigger/invoke?%s' % (jenkins, query)
   print jenkins_url
 
   response = post(jenkins_url,
     headers={"Accept": "application/json"},
-    params = { 'GIT_PROJECT': git_project },
-    auth=(cfg.JENKINS_LOGIN, cfg.JENKINS_PASSWORD))
+    params = { 'GIT_PROJECT': git_project }
 
   if (response.code in range(400, 500)):
     return "Request error"
