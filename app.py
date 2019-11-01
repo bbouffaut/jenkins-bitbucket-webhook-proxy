@@ -25,7 +25,7 @@ def build():
 
   response = post(jenkins_url,
     headers={"Accept": "application/json"},
-    params = { 'GIT_PROJECT': git_project }
+    params = { 'GIT_PROJECT': git_project })
 
   if (response.code in range(400, 500)):
     return "Request error"
