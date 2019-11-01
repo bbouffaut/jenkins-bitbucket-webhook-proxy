@@ -16,11 +16,12 @@ def build():
 
   json = request.json
   git_hash = json['push']['changes'][0]['new']['target']['hash']
-  print git_hash
+  git_project = json['repository']['name'].lower()
+  print git_project + "/" + git_hash
 
   # forward the request
   jenkins_url = '%s/job/%s/buildWithParameters?%s' % (jenkins, job, query)
-  response = post(jenkins_url, params = { 'GIT_HASH': git_hash })
+  response = post(jenkins_url, params = { 'GIT_PROJECT': git_project })
 
   if (response.code in range(400, 500)):
     return "Request error"
